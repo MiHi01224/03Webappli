@@ -7,20 +7,89 @@
 </head>
 
 <body>
-    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-    <div id="player"></div>
+    <!-- YouTube Player -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="bg-video.mp4" type="video/mp4" />
+        </video>
+    </div>
+
+
+    <div class="video-page">
+        <!-- Video Player Section -->
+        <div class="pulse-img-wrapper">
+            <img src="image/image.png" alt="レインボー画像" class="pulse-img" />
+        </div>
+        <div class="video-player">
+            <div id="player"></div>
+        </div>
+
+
+        <!-- Controls Section -->
+        <nav class="video-controls">
+            <ul>
+                <!-- Control Buttons -->
+                <li id="doplay" class="control-button --hue">再生</li>
+                <li id="dostop" class="control-button">停止</li>
+                <li id="dopause" class="control-button">一時停止</li>
+                <li id="mute" class="control-button">ミュート</li>
+                <li id="do10sNext" class="control-button">10秒先へ</li>
+                <li id="do10sPrev" class="control-button">10秒戻る</li>
+
+                <!-- Volume Control -->
+                <li class="volume-control">
+                    <label for="volume">ボリューム</label>
+                    <input type="range" min="0" max="100" name="volume" id="volume" value="50">
+                    <span id="volumeNum">50</span>
+                </li>
+
+                <!-- Movie Selector -->
+                <li class="movie-select">
+                    <select id="MovieId" class="ytMovie" name="ytMovie">
+                        <option selected>選択してください。</option>
+                        <option value="bjN-3EyXNyE">TRiDENT『Alive』MV</option>
+                        <option value="We__CnrYa9U">TRiDENT『DISTINATION』</option>
+                        <option value="I6ld4ecEp7s">TRiDENT『IMAGINATION』MV</option>
+                        <option value="azQVVhMUz58">TRiDENT『Continue』MV【exガールズロックバンド革命】</option>
+                    </select>
+                </li>
+
+                <!-- Playback Speed Control -->
+                <li class="playback-speed">
+                    <form id="doSpeed">
+                        <input type="radio" id="mslow" name="speed" value="0.25"><label for="mslow">0.25</label>
+                        <input type="radio" id="slow" name="speed" value="0.5"><label for="slow">0.5</label>
+                        <input type="radio" id="normal" name="speed" value="1.0" checked><label for="normal">1</label>
+                        <input type="radio" id="hspeed" name="speed" value="1.5"><label for="hspeed">1.5</label>
+                        <input type="radio" id="mhspeed" name="speed" value="2"><label for="mhspeed">2</label>
+                    </form>
+                </li>
+
+                <!-- Search Section -->
+                <li class="search-section">
+                    <form>
+                        <input type="search" id="ytSearch" placeholder="検索">
+                        <button id="searchBtn">検索</button>
+                    </form>
+                    <select class="searchlist"></select>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
     <script>
-        // 2. This code loads the IFrame Player API code asynchronously.
+
+
+        // Load YouTube IFrame Player API asynchronously
         var tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // 3. This function creates an <iframe> (and YouTube player) after the API code downloads.
         var player;
-        let youtubeId = 'UP1zTP5qcfw';
+        let youtubeId = 'UP1zTP5qcfw'; // Default YouTube video ID
 
+        // Initialize YouTube Player after the API loads
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '360',
@@ -31,92 +100,50 @@
                     controls: 0
                 },
                 events: {
-                    onReady: onPlayerReady
+                    onReady: onPlayerReady,
+                    onStateChange: onPlayerStateChange
                 }
             });
         }
 
-        // 4. The API will call this function when the video player is ready.
+        // When the player is ready, start the video and set initial volume
         function onPlayerReady(event) {
             event.target.playVideo(); // 最初の再生
             let currentVol = 5; // 最初のボリュームを設定（0〜100）
             event.target.setVolume(currentVol); // Playerのボリュームに設定
             document.querySelector('#volume').value = currentVol; // rangeフォームに音量を設定
             document.querySelector('#volumeNum').textContent = currentVol; // テキストにも音量を数値で表示
+
+            startRainbowBeat(); // レインボーアニメーション開始
         }
 
-        // 5. The API calls this function when the player's state changes.
+        // Handle player state change (play, pause, etc.)
         var done = false;
         function onPlayerStateChange(event) {
             if (event.data == YT.PlayerState.PLAYING && !done) {
-                setTimeout(stopVideo, 6000);
                 done = true;
+                startPulseBeat();
+            } else {
+                stopPulseBeat();
             }
         }
 
-        // 動画停止関数
+        // Function to stop video playback
         function stopVideo() {
             player.stopVideo();
         }
-    </script>
 
-    <nav>
-        <ul>
-            <li id="doplay">再生</li>
-            <li id="dostop">停止</li>
-            <li id="dopause">一時停止</li>
-            <li id="mute">ミュート</li>
-            <li id="do10sNext">10秒先へ</li>
-            <li id="do10sPrev">10秒戻る</li>
-            <label>ボリューム
-                <input type="range" min="0" max="100" name="volume" id="volume" value="50" />
-                <span id="volumeNum"></span>
-            </label>
-            <li>
-                <select id="MovieId" class="ytMovie" name="ytMovie">
-                    <option selected>選択してください。</option>
-                    <option value="bjN-3EyXNyE">TRiDENT『Alive』MV</option>
-                    <option value="We__CnrYa9U">TRiDENT『DISTINATION』</option>
-                    <option value="I6ld4ecEp7s">TRiDENT『IMAGINATION』MV</option>
-                    <option value="azQVVhMUz58">TRiDENT『Continue』MV【exガールズロックバンド革命】</option>
-                </select>
-            </li>
-            <li>
-                <form id="doSpeed">
-                    <input type="radio" id="mslow" name="speed" value="0.25" />
-                    <label for="mslow">0.25</label>
-                    <input type="radio" id="slow" name="speed" value="0.5" />
-                    <label for="slow">0.5</label>
-                    <input type="radio" id="normal" name="speed" value="1.0" checked />
-                    <label for="normal">1</label>
-                    <input type="radio" id="hspeed" name="speed" value="1.5" />
-                    <label for="hspeed">1.5</label>
-                    <input type="radio" id="mhspeed" name="speed" value="2" />
-                    <label for="mhspeed">2</label>
-                </form>
-            </li>
-            <li>
-                <form>
-                    <input type="search" id="ytSearch" value="TRiDENT" />
-                    <button id="searchBtn">検索</button>
-                </form>
-                <select class="searchlist"></select>
-            </li>
-        </ul>
-    </nav>
-
-    <script>
-        // 再生関数
+        // Function to play video
         function playTheVideo() {
             player.playVideo();
         }
 
-        // 一時停止関数
+        // Function to pause video
         function pauseTheVideo() {
             player.pauseVideo();
         }
 
-        // ミュート切替関数
+        // Toggle mute/unmute
         function onMute() {
             if (player.isMuted()) {
                 player.unMute();
@@ -125,32 +152,32 @@
             }
         }
 
-        // 10秒前に戻る関数
+        // Skip 10 seconds backward
         function onePrev() {
             let currentTime = player.getCurrentTime();
             player.seekTo(currentTime - 10);
         }
 
-        // 10秒進む関数
+        // Skip 10 seconds forward
         function oneNext() {
             let currentTime = player.getCurrentTime();
             player.seekTo(currentTime + 10);
         }
 
-        // ボリューム変更関数
+        // Set video volume
         function volumeFn(vol) {
             player.setVolume(vol);
         }
 
-        // 再生スピード変更関数
+        // Set playback speed
         function playSpeed(num) {
             player.setPlaybackRate(num);
             player.playVideo();
         }
 
-        // YouTube検索関数
+        // Search YouTube videos
         function ytSearch(val) {
-            const key = 'AIzaSyCzq_H7yFvzqaY2IgRVM4-1rLkqQx0ESqc'; // 自分のAPIキーを設定
+            const key = 'AIzaSyB6g-4N0cLAf4_fDp-gnIM_MrSPc4nUmoE'; // Your API key
             const num = 10;
             const part = 'snippet';
             const type = 'video';
@@ -160,22 +187,76 @@
             fetch(`https://www.googleapis.com/youtube/v3/search?type=${type}&part=${part}&maxResults=${num}&key=${key}&q=${query}&playsinline=1`)
                 .then((data) => data.json())
                 .then((obj) => {
-                    for (let movie of obj["items"]) {
-                        const ytId = movie["id"]["videoId"];
-                        const ytTitle = movie["snippet"]["title"];
+                    obj.items.forEach(movie => {
+                        const ytId = movie.id.videoId;
+                        const ytTitle = movie.snippet.title;
                         const optionTag = document.createElement('option');
                         optionTag.textContent = ytTitle;
                         optionTag.setAttribute('value', ytId);
                         selectvideo.appendChild(optionTag);
-                    }
+                    });
                 });
         }
 
-        // イベントリスナー設定
+        // アニメーション開始
+        let pulseInterval = null;
+
+            function startPulseBeat() {
+                const img = document.querySelector('.pulse-img');
+                if (!img || pulseInterval) return;  // 既にアニメーションが動いていれば何もしない
+
+                // 画像のアニメーションをスタート
+                pulseInterval = setInterval(() => {
+                    img.classList.add('is-pulse');
+                    setTimeout(() => img.classList.remove('is-pulse'), 200); // 0.2秒で戻す
+                }, 500); // 1秒ごとに実行
+            }
+
+            // アニメーション停止
+            function stopPulseBeat() {
+                // アニメーション停止
+                clearInterval(pulseInterval);
+                pulseInterval = null;
+
+                const img = document.querySelector('.pulse-img');
+                if (img) img.classList.remove('is-pulse');  // ビートのエフェクトをリセット
+            }
+
+
+        // Rainbow color effect on the image
+        let hue = 0;
+        let hueAccent = 60;
+
+        function animateImage() {
+            const image = document.querySelector('.pulse-img');
+            const bg = document.querySelector('.video-page');
+            if (!image || !bg) return;
+
+            // Add pulse animation
+            image.classList.add('pulse');
+            setTimeout(() => image.classList.remove('pulse'), 200);
+
+            // Apply hue-rotate filter for rainbow effect
+            image.style.filter = `hue-rotate(${hue}deg)`;
+            document.documentElement.style.setProperty('--hue', `${hue}deg`); // CSS変数を更新
+            document.documentElement.style.setProperty('--hue--accent', `${hueAccent}deg`); // CSS変数を更新
+            hue = (hue + 30) % 1000000;
+            hueAccent = (hueAccent + 30) % 1000000;
+        }
+
+        function startRainbowBeat() {
+            setInterval(() => {
+                if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+                    animateImage();
+                }
+            }, 500); // Change color every 0.5s
+        }
+
+        // Event listeners for control buttons
         document.querySelector('#doplay').addEventListener('click', playTheVideo);
         document.querySelector('#dostop').addEventListener('click', stopVideo);
         document.querySelector('#dopause').addEventListener('click', pauseTheVideo);
-        document.querySelector('#mute').addEventListener('click', function () {
+        document.querySelector('#mute').addEventListener('click', () => {
             onMute();
             this.innerText = this.innerText === 'ミュート' ? 'ミュート解除' : 'ミュート';
         });

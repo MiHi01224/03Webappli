@@ -1,1 +1,159 @@
-@charset "utf-8";
+:root {
+    --hue: 0deg;
+    --hue--accent: 60deg;
+}
+
+/* 全体 */
+.video-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    background-color: #000;
+    color: #fff;
+    transition: filter 0.3s linear;
+}
+
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+
+    video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(20px) brightness(0.6) saturate(1.5);
+        transform: scale(1.1); // 拡大で余白対策
+    }
+}
+
+.video-player {
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+}
+
+.pulse-img-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.pulse-img {
+    width: 150px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    display: block;
+    margin: 0 auto;
+}
+
+.pulse-img.is-pulse {
+    transform: translateY(-10px) rotate(5deg);
+    filter: hue-rotate(var(--hue));
+}
+
+
+.pulse-img.pulse {
+    animation: pulseAnimation 0.2s ease-in-out;
+}
+
+@keyframes pulseAnimation {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.video-controls {
+    width: 100%;
+    max-width: 640px;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.video-controls ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.video-controls .control-button {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 0 10px hsl(var(--hue--accent), 100%, 80%),
+            0 0 20px hsl(var(--hue--accent), 100%, 60%);
+    color: #fff;
+    border: 1px solid hsl(var(--hue--accent), 100%, 50%);
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.video-controls .control-button:hover {
+    background-color: hsl(var(--hue--accent), 100%, 30%);
+}
+
+.video-controls .volume-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.video-controls input[type="radio"] {
+    accent-color: hsl(var(--hue--accent), 100%, 50%);
+    transition: accent-color 0.5s ease;
+}
+
+.video-controls .movie-select select,
+.video-controls .playback-speed input {
+    margin-top: 0.5rem;
+}
+
+.video-controls .search-section {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.video-controls .search-section input[type="search"] {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.video-controls .search-section button {
+    padding: 0.5rem 1rem;
+    box-shadow: 0 0 10px hsl(var(--hue), 100%, 80%),
+        0 0 20px hsl(var(--hue), 100%, 60%);
+    color: #fff;
+    background-color: #000;
+    border: 1px solid hsl(var(--hue), 100%, 50%);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.video-controls .search-section button:hover {
+    background-color: hsl(var(--hue), 100%, 30%);
+}
