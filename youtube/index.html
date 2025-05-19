@@ -18,7 +18,9 @@
     <div class="video-page">
         <!-- Video Player Section -->
         <div class="pulse-img-wrapper">
-            <img src="image/image.png" alt="レインボー画像" class="pulse-img" />
+            <div class="pulse-anim-wrapper">
+                <img src="image/image.png" alt="レインボー画像" class="pulse-img" />
+            </div>
         </div>
         <div class="video-player">
             <div id="player"></div>
@@ -47,9 +49,9 @@
                 <li class="movie-select">
                     <select id="MovieId" class="ytMovie" name="ytMovie">
                         <option selected>選択してください。</option>
-                        <option value="bjN-3EyXNyE">TRiDENT『Alive』MV</option>
-                        <option value="We__CnrYa9U">TRiDENT『DISTINATION』</option>
-                        <option value="I6ld4ecEp7s">TRiDENT『IMAGINATION』MV</option>
+                        <option value="Sy_08-HcR3Y">丸の内サディスティック - 椎名林檎（フル）</option>
+                        <option value="UFQEttrn6CQ">米津玄師 - 感電 Kenshi Yonezu - KANDEN</option>
+                        <option value="s582L3gujnw">米津玄師 - パプリカ Kenshi Yonezu - PAPRIKA</option>
                         <option value="azQVVhMUz58">TRiDENT『Continue』MV【exガールズロックバンド革命】</option>
                     </select>
                 </li>
@@ -71,7 +73,9 @@
                         <input type="search" id="ytSearch" placeholder="検索">
                         <button id="searchBtn">検索</button>
                     </form>
-                    <select class="searchlist"></select>
+                    <div class="search-result-container">
+                        <select class="searchlist"></select>
+                    </div>
                 </li>
             </ul>
         </nav>
@@ -120,11 +124,12 @@
         // Handle player state change (play, pause, etc.)
         var done = false;
         function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING && !done) {
-                done = true;
+            if (event.data == YT.PlayerState.PLAYING) {
                 startPulseBeat();
+                startRainbowBeat();
             } else {
-                stopPulseBeat();
+                    stopPulseBeat();
+                stopRainbowBeat();
             }
         }
 
@@ -187,6 +192,7 @@
             fetch(`https://www.googleapis.com/youtube/v3/search?type=${type}&part=${part}&maxResults=${num}&key=${key}&q=${query}&playsinline=1`)
                 .then((data) => data.json())
                 .then((obj) => {
+                    selectvideo.innerHTML = '';
                     obj.items.forEach(movie => {
                         const ytId = movie.id.videoId;
                         const ytTitle = movie.snippet.title;
@@ -199,28 +205,30 @@
         }
 
         // アニメーション開始
+        let baseInterval = 600;
         let pulseInterval = null;
 
-            function startPulseBeat() {
-                const img = document.querySelector('.pulse-img');
-                if (!img || pulseInterval) return;  // 既にアニメーションが動いていれば何もしない
+            function startPulseBeat(speed = 1) {
+                    const img = document.querySelector('.pulse-anim-wrapper');
+                    if (!img || pulseInterval) return;
 
-                // 画像のアニメーションをスタート
-                pulseInterval = setInterval(() => {
-                    img.classList.add('is-pulse');
-                    setTimeout(() => img.classList.remove('is-pulse'), 200); // 0.2秒で戻す
-                }, 500); // 1秒ごとに実行
+                    let interval = baseInterval / speed;
+
+                    pulseInterval = setInterval(() => {
+                        img.classList.add('is-pulse');
+                        setTimeout(() => img.classList.remove('is-pulse'), 200);
+                    }, interval);
             }
 
             // アニメーション停止
-            function stopPulseBeat() {
-                // アニメーション停止
+           function stopPulseBeat() {
+                if (!pulseInterval) return;
                 clearInterval(pulseInterval);
                 pulseInterval = null;
-
-                const img = document.querySelector('.pulse-img');
-                if (img) img.classList.remove('is-pulse');  // ビートのエフェクトをリセット
+                const img = document.querySelector('.pulse-anim-wrapper');
+                if (img) img.classList.remove('is-pulse');
             }
+
 
 
         // Rainbow color effect on the image
@@ -228,7 +236,7 @@
         let hueAccent = 60;
 
         function animateImage() {
-            const image = document.querySelector('.pulse-img');
+            const image = document.querySelector('.pulse-anim-wrapper');
             const bg = document.querySelector('.video-page');
             if (!image || !bg) return;
 
@@ -244,22 +252,46 @@
             hueAccent = (hueAccent + 30) % 1000000;
         }
 
-        function startRainbowBeat() {
-            setInterval(() => {
-                if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
-                    animateImage();
-                }
-            }, 500); // Change color every 0.5s
+        let rainbowInterval = null;
+
+        function startRainbowBeat(speed = 1) {
+                if (rainbowInterval) return;
+
+                let interval = baseInterval / speed;
+
+                rainbowInterval = setInterval(() => {
+                    if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+                        animateImage();
+                    }
+                }, interval);
         }
+        function stopRainbowBeat() {
+                if (!rainbowInterval) return;
+                    clearInterval(rainbowInterval);
+                    rainbowInterval = null;
+            }
+
+            function changeSpeed(num) {
+                    player.setPlaybackRate(num);
+                    player.playVideo();
+
+                    // アニメーションをいったん止める
+                    stopPulseBeat();
+                    stopRainbowBeat();
+
+                    // 新しい速度でスタート
+                    startPulseBeat(num);
+                    startRainbowBeat(num);
+                }
 
         // Event listeners for control buttons
         document.querySelector('#doplay').addEventListener('click', playTheVideo);
         document.querySelector('#dostop').addEventListener('click', stopVideo);
         document.querySelector('#dopause').addEventListener('click', pauseTheVideo);
-        document.querySelector('#mute').addEventListener('click', () => {
-            onMute();
-            this.innerText = this.innerText === 'ミュート' ? 'ミュート解除' : 'ミュート';
-        });
+        document.querySelector('#mute').addEventListener('click', function () {
+                onMute();
+                this.innerText = this.innerText === 'ミュート' ? 'ミュート解除' : 'ミュート';
+            });
         document.querySelector('#do10sPrev').addEventListener('click', onePrev);
         document.querySelector('#do10sNext').addEventListener('click', oneNext);
         document.querySelector('#volume').addEventListener('change', function () {
@@ -272,12 +304,22 @@
             onYouTubeIframeAPIReady();
         });
         document.querySelector('#doSpeed').addEventListener('change', function () {
-            playSpeed(parseFloat(this.speed.value));
-        });
+                changeSpeed(parseFloat(this.speed.value));
+            });
         document.querySelector('#searchBtn').addEventListener('click', function (e) {
             e.preventDefault();
             ytSearch(document.querySelector('#ytSearch').value);
         });
+
+        document.querySelector('.searchlist').addEventListener('change', function () {
+                const selectedId = this.value;
+                if (!selectedId) return;
+
+                youtubeId = selectedId;
+                player.destroy();
+                onYouTubeIframeAPIReady();
+            });
+
     </script>
 </body>
 

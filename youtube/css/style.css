@@ -12,6 +12,7 @@
   padding: 2rem;
   background-color: #000;
   color: #fff;
+  text-shadow: 0 0 8px hsl(var(--hue--accent), 100%, 80%), 0 0 20px hsl(var(--hue--accent), 100%, 80%);
   transition: filter 0.3s linear;
 }
 
@@ -49,17 +50,16 @@
 
 .pulse-img {
   width: 150px;
-  transition: transform 0.2s ease, filter 0.2s ease;
   display: block;
   margin: 0 auto;
+  transition: filter 0.2s ease;
 }
 
-.pulse-img.is-pulse {
-  transform: translateY(-10px) rotate(5deg);
-  filter: hue-rotate(var(--hue));
+.pulse-anim-wrapper {
+  transition: transform 0.2s ease;
 }
 
-.pulse-img.pulse {
+.pulse-anim-wrapper.pulse {
   -webkit-animation: pulseAnimation 0.2s ease-in-out;
           animation: pulseAnimation 0.2s ease-in-out;
 }
@@ -89,7 +89,7 @@
 }
 .video-controls {
   width: 100%;
-  max-width: 640px;
+  max-width: 700px;
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -116,7 +116,9 @@
   border: 1px solid hsl(var(--hue--accent), 100%, 50%);
   border-radius: 5px;
   font-size: 1rem;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, box-shadow 0.3s ease;
+  position: relative;
+  z-index: 0;
 }
 
 .video-controls .control-button:hover {
@@ -165,5 +167,16 @@
 
 .video-controls .search-section button:hover {
   background-color: hsl(var(--hue), 100%, 30%);
+}
+
+.search-result-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border-top: 1px solid #ccc;
+  z-index: 999;
 }
 /*# sourceMappingURL=style.css.map */
