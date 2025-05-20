@@ -78,6 +78,11 @@
                         <select class="searchlist"></select>
                     </div>
                 </li>
+                <li>
+                    <label>
+                        <input type="checkbox" id="shakeToggle"> シェイクON
+                    </label>
+                </li>
             </ul>
         </nav>
     </div>
@@ -230,6 +235,30 @@
                 if (img) img.classList.remove('is-pulse');
             }
 
+            document.getElementById('shakeToggle').addEventListener('change', function () {
+                    if (this.checked) {
+                        startShaking();
+                    } else {
+                        stopShaking();
+                    }
+                });
+
+            let shakeInterval = null;
+
+            function startShaking() {
+                    shakeInterval = setInterval(() => {
+                        document.body.classList.add('shake');
+                        setTimeout(() => {
+                            document.body.classList.remove('shake');
+                        }, 200); // shakeの持続時間
+                    }, baseInterval);
+                }
+
+                function stopShaking() {
+                    clearInterval(shakeInterval);
+                }
+
+
 
 
         // Rainbow color effect on the image
@@ -279,10 +308,12 @@
                     // アニメーションをいったん止める
                     stopPulseBeat();
                     stopRainbowBeat();
+                    startShaking();
 
                     // 新しい速度でスタート
                     startPulseBeat(num);
                     startRainbowBeat(num);
+                    stopShaking();
                 }
 
         // Event listeners for control buttons
