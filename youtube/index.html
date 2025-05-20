@@ -50,9 +50,10 @@
                     <select id="MovieId" class="ytMovie" name="ytMovie">
                         <option selected>選択してください。</option>
                         <option value="Sy_08-HcR3Y">丸の内サディスティック - 椎名林檎（フル）</option>
-                        <option value="UFQEttrn6CQ">米津玄師 - 感電 Kenshi Yonezu - KANDEN</option>
+                        <option value="8tQiWHXSGN0">ファタール / GEMN - Fatal / GEMN</option>
                         <option value="s582L3gujnw">米津玄師 - パプリカ Kenshi Yonezu - PAPRIKA</option>
                         <option value="azQVVhMUz58">TRiDENT『Continue』MV【exガールズロックバンド革命】</option>
+                        <option value="Soy4jGPHr3g">テトリス / 重音テトSV</option>
                     </select>
                 </li>
 
@@ -113,7 +114,7 @@
         // When the player is ready, start the video and set initial volume
         function onPlayerReady(event) {
             event.target.playVideo(); // 最初の再生
-            let currentVol = 5; // 最初のボリュームを設定（0〜100）
+            let currentVol = 50; // 最初のボリュームを設定（0〜100）
             event.target.setVolume(currentVol); // Playerのボリュームに設定
             document.querySelector('#volume').value = currentVol; // rangeフォームに音量を設定
             document.querySelector('#volumeNum').textContent = currentVol; // テキストにも音量を数値で表示
@@ -294,15 +295,31 @@
             });
         document.querySelector('#do10sPrev').addEventListener('click', onePrev);
         document.querySelector('#do10sNext').addEventListener('click', oneNext);
-        document.querySelector('#volume').addEventListener('change', function () {
+        document.querySelector('#volume').addEventListener('input', function () {
             volumeFn(this.value);
             document.querySelector('#volumeNum').textContent = this.value;
         });
+
+        const baseIntervals = {
+                'Sy_08-HcR3Y': 60000/100, // 丸の内サディスティック
+                '8tQiWHXSGN0': 60000/156, // ファタール / GEMN - Fatal / GEMN
+                's582L3gujnw': 60000/100, // パプリカ
+                'azQVVhMUz58': 60000/100, // Continue
+                'Soy4jGPHr3g': 60000 / 170  // テトリス
+            };
+
         document.querySelector('#MovieId').addEventListener('change', function () {
-            youtubeId = this.value;
-            player.destroy();
-            onYouTubeIframeAPIReady();
-        });
+                const selectedId = this.value;
+                youtubeId = selectedId;
+                player.loadVideoById(selectedId);
+
+                baseInterval = baseIntervals[selectedId] || 600;
+
+                stopPulseBeat();
+                stopRainbowBeat();
+                startPulseBeat();
+                startRainbowBeat();
+            });
         document.querySelector('#doSpeed').addEventListener('change', function () {
                 changeSpeed(parseFloat(this.speed.value));
             });
