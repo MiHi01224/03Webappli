@@ -80,7 +80,7 @@
                 </li>
                 <li>
                     <label>
-                        <input type="checkbox" id="shakeToggle"> シェイクON
+                        <input type="checkbox" id="shakeToggle"> シェイク
                     </label>
                 </li>
             </ul>
@@ -134,7 +134,7 @@
                 startPulseBeat();
                 startRainbowBeat();
             } else {
-                    stopPulseBeat();
+                stopPulseBeat();
                 stopRainbowBeat();
             }
         }
@@ -237,22 +237,35 @@
 
             document.getElementById('shakeToggle').addEventListener('change', function () {
                     if (this.checked) {
-                        startShaking();
+                        startShaking(1);
                     } else {
                         stopShaking();
                     }
                 });
 
+
             let shakeInterval = null;
 
-            function startShaking() {
+            function startShaking(speed = 1) {
+                    if (shakeInterval) {
+                        clearInterval(shakeInterval);
+                    }
+
+                    let interval = baseInterval / speed;
+
+                    if (interval < 200) {
+                        interval = 200;
+                    }
+
                     shakeInterval = setInterval(() => {
                         document.body.classList.add('shake');
                         setTimeout(() => {
                             document.body.classList.remove('shake');
-                        }, 200); // shakeの持続時間
-                    }, baseInterval);
+                        }, 200);
+                    }, interval);
                 }
+
+
 
                 function stopShaking() {
                     clearInterval(shakeInterval);
@@ -308,12 +321,12 @@
                     // アニメーションをいったん止める
                     stopPulseBeat();
                     stopRainbowBeat();
-                    startShaking();
+                    stopShaking(num);
 
                     // 新しい速度でスタート
                     startPulseBeat(num);
                     startRainbowBeat(num);
-                    stopShaking();
+                    startShaking(num);
                 }
 
         // Event listeners for control buttons
@@ -336,7 +349,7 @@
                 '8tQiWHXSGN0': 60000/156, // ファタール / GEMN - Fatal / GEMN
                 's582L3gujnw': 60000/100, // パプリカ
                 'azQVVhMUz58': 60000/100, // Continue
-                'Soy4jGPHr3g': 60000 / 170  // テトリス
+                'Soy4jGPHr3g': 60000/170  // テトリス
             };
 
         document.querySelector('#MovieId').addEventListener('change', function () {
@@ -350,6 +363,7 @@
                 stopRainbowBeat();
                 startPulseBeat();
                 startRainbowBeat();
+                startShaking(1);
             });
         document.querySelector('#doSpeed').addEventListener('change', function () {
                 changeSpeed(parseFloat(this.speed.value));
